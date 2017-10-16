@@ -1,9 +1,9 @@
-import unittest
-
+from pyqybe.expressions import Ex
 from pyqybe.oracle_query_builder import OracleQueryBuilder
+from pyqybe.tests.pyqybe_test_case import PyQyBeTestCase
 
 
-class TestOracleQueryBuilder(unittest.TestCase):
+class TestOracleQueryBuilder(PyQyBeTestCase):
     def setUp(self):
         self.query_builder = OracleQueryBuilder()
 
@@ -46,3 +46,9 @@ class TestOracleQueryBuilder(unittest.TestCase):
         actual = query_builder.plain_query
 
         self.assertEqual(expected, actual)
+
+    def test_select_from_where(self):
+        """Assert if query builder handlers SELECT FROM WHERE statements"""
+        actual = OracleQueryBuilder().select('foo').from_table('bar').where(Ex({'fooValue': 'banana'})).plain_query
+        expected = 'SELECT foo FROM bar WHERE fooValue == \'banana\''
+        self.assertEqualQueries(expected, actual)

@@ -1,22 +1,32 @@
-class Eq:
-    def __init__(self, column):
-        self.column = column
+from pyqybe.operators import Operators
 
-    def equal(self, value):
-        return '{} == {}'.format(
-            self.column,
-            value
-        )
 
-    def between(self, arg1, arg2):
-        if isinstance(arg1, str):
-            arg1 = '\'{}\''.format(arg1)
+class Expression(list):
+    def __init__(self, expressions=None, order=None):
+        super().__init__()
+        self.parse_expression(expressions, order)
 
-        if isinstance(arg2, str):
-            arg2 = '\'{}\''.format(arg2)
+    def parse_expression(self, expressions, order):
+        if not order:
+            order = expressions.keys()
 
-        return '{} BETWEEN {} AND {}'.format(
-            self.column,
-            arg1,
-            arg2
-        )
+        equations = []
+        for column in order:
+            operator, value = Operators().equal, expressions[column]
+            equations.append(operator(column, value))
+
+        self.extend(equations)
+
+
+class Ex(Expression):
+    def __init__(self, expressions, order=None):
+        super().__init__(expressions, order)
+
+
+class ExOr(Expression):
+    def __init__(self, expressions, order=None):
+        super().__init__(expressions, order)
+
+    def extend(self, equations):
+        formatted_equation = ' OR '.join(equation for equation in equations)
+        super().append(formatted_equation)

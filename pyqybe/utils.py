@@ -8,9 +8,11 @@ class QueryUtils:
 
     @staticmethod
     def remove_sql_commentaries(query):
-        query = re.sub(re.compile("--.*?\n"), "",
-                       query)  # remove all occurance singleline comments (//COMMENT\n ) from query
-        return query
+        if not query:
+            return ''
+
+        # remove all occurance singleline comments (//COMMENT\n ) from query
+        return re.sub(re.compile("--.*?\n"), "", query)
 
     @staticmethod
     def remove_line_and_tabs(string):
