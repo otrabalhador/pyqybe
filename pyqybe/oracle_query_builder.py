@@ -35,7 +35,7 @@ class OracleQueryBuilder:
     def plain_query(self):
         return clean_query(self.build_query())
 
-    def select(self, *args, **kwargs):
+    def select(self, *args):
         """
         This method will receive arguments and key arguments
         for columns and aliased for columns for the
@@ -49,20 +49,9 @@ class OracleQueryBuilder:
                         FOO,
                         BAR
 
-        :param kwargs: Columns to select if you wish to attribute an alias to the columns
-            example:
-                with the following key arguments
-                    kwargs = {FIXED_COLUMN='1', REFERENCE_DAY=REFERENCE_DAY}
-                the parsed query will be
-                    SELECT
-                        1               AS FIXED_COLUMN,
-                        REFERENCE_DAY   AS REFERENCE_DAY
         :return: An OracleQueryBuilder object with the component SELECT
         """
-        self.components[Select].append(
-            *args,
-            *['{} AS {}'.format(value, column) for column, value in kwargs.items()]
-        )
+        self.components[Select].extend(args)
 
         return self
 

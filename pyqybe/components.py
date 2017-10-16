@@ -13,7 +13,7 @@ class Select(ComponentParser):
 
         return '{component}\n{values}\n'.format(
             component=self.COMPONENT_STR,
-            values='\n'.join('\t{}'.format(value) for value in values)
+            values=',\n'.join('\t{}'.format(value) for value in values)
         )
 
 
