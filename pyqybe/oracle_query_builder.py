@@ -1,7 +1,8 @@
 import collections
 
-from .components import (
+from .statements import (
     Select,
+    From,
     Where,
     GroupBy,
     Having,
@@ -13,16 +14,15 @@ from .utils import clean_query
 class OracleQueryBuilder:
     COMPONENT_ORDER = {
         1: Select,
-        2: Where,
-        3: GroupBy,
-        4: Having,
-        5: OrderBy
+        2: From,
+        3: Where,
+        4: GroupBy,
+        5: Having,
+        6: OrderBy
     }
 
     def __init__(self):
-        self.components = {
-            Select: [],
-        }
+        self.statements = {}
 
     def __str__(self):
         return self.build_query()
@@ -51,17 +51,27 @@ class OracleQueryBuilder:
 
         :return: An OracleQueryBuilder object with the component SELECT
         """
-        self.components[Select].extend(args)
+        if not self.statements.get(Select):
+            self.statements[Select] = Select()
+
+        self.statements[Select].add(*args)
 
         return self
 
     def from_table(self, *args):
-        pass
+        if not self.statements.get(From):
+            self.statements[From] = From()
+
+        self.statements[From].add(*args)
+
+        return self
 
     def build_query(self):
         query = ''
-        ordered_components = collections.OrderedDict(sorted(self.COMPONENT_ORDER.items()))
-        for _, component in ordered_components.items():
-            query += component().parse(self.components.get(component))
+        ordered_statements = collections.OrderedDict(sorted(self.COMPONENT_ORDER.items()))
+        for _, statement in ordered_statements.items():
+            statement_instance = self.statements.get(statement)
+            if statement_instance:
+                query += statement_instance.parse()
 
         return query

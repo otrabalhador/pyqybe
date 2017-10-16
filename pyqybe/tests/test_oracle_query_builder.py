@@ -36,3 +36,13 @@ class TestOracleQueryBuilder(unittest.TestCase):
         actual = query_builder.plain_query
 
         self.assertEqual(expected, actual)
+
+    def test_select_from(self):
+        """Assert if query builder handles SELECT and FROM statements"""
+        query_builder = OracleQueryBuilder()
+        query_builder.select('foo').select('bar').\
+            from_table('fooTable').from_table('barTable')
+        expected = 'SELECT foo, bar FROM fooTable, barTable'
+        actual = query_builder.plain_query
+
+        self.assertEqual(expected, actual)
