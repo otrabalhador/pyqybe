@@ -2,31 +2,52 @@ from pyqybe.operators import Operators
 
 
 class Expression(list):
-    def __init__(self, expressions=None, order=None):
+    def __init__(self, *expressions, order=None, join_str):
         super().__init__()
-        self.parse_expression(expressions, order)
+        self._expressions = []
+        self.join_str = join_str
+        self.parse_expressions(*expressions, order=order)
 
-    def parse_expression(self, expressions, order):
-        if not order:
-            order = expressions.keys()
-
+    def parse_expressions(self, *expressions, order):
         equations = []
-        for column in order:
-            operator, value = Operators().equal, expressions[column]
-            equations.append(operator(column, value))
+        for expression in expressions:
+
+            if isinstance(expression, list):
+                equations.extend(expression)
+
+            else:
+                if not order:
+                    order = expression.keys()
+
+                for column in order:
+                    operator, value = Operators().equal, expression[column]
+                    equations.append(operator(column, value))
+
+                order = None
 
         self.extend(equations)
 
+        return self
+
+    def extend(self, equations):
+        self_contain = True if len(equations) > 1 else False
+
+        formatted_equation = self.join_str.join(equations)
+        if self_contain:
+            formatted_equation = '({})'.format(formatted_equation)
+
+        super().append(formatted_equation)
+
 
 class Ex(Expression):
-    def __init__(self, expressions, order=None):
-        super().__init__(expressions, order)
+    JOIN_STR = ' AND '
+
+    def __init__(self, *expressions, order=None):
+        super().__init__(*expressions, order=order, join_str=self.JOIN_STR)
 
 
 class ExOr(Expression):
-    def __init__(self, expressions, order=None):
-        super().__init__(expressions, order)
+    JOIN_STR = ' OR '
 
-    def extend(self, equations):
-        formatted_equation = ' OR '.join(equation for equation in equations)
-        super().append(formatted_equation)
+    def __init__(self, *expressions, order=None):
+        super().__init__(*expressions, order=order, join_str=self.JOIN_STR)

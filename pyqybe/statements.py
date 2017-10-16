@@ -37,6 +37,7 @@ class Where(Statement):
     def add(self, elements):
         if not isinstance(elements, list):
             elements = [elements]
+
         self._elements.extend(elements)
         return self
 
