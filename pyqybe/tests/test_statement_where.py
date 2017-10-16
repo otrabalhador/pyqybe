@@ -1,31 +1,40 @@
-import unittest
+from pyqybe.expressions import Ex, ExOr
+from pyqybe.operators import Operator as op
 from pyqybe.statements import Where
-from pyqybe.expressions import Eq
-from pyqybe.utils import clean_query
+from pyqybe.tests.pyqybe_test_case import PyQyBeTestCase
 
 
-class TestStatementWhere(unittest.TestCase):
-    def assertEqualQueries(self, first, second, msg=None):
-        """Fail if the two objects are unequal as determined by the '=='
-           operator.
-        """
-        first = clean_query(first)
-        second = clean_query(second)
-        assertion_func = self._getAssertEqualityFunc(first, second)
-        assertion_func(first, second, msg=msg)
-
+class TestStatementWhere(PyQyBeTestCase):
     def test_select_from_where(self):
-        """Assert if query builder handles SELECT and FROM statements"""
+        """Asserts Statement object Where"""
         scenarios = [
-            {'expected': 'WHERE A == 1', 'elements': ('A == 1', )},
-            {'expected': 'WHERE A == 1', 'elements': (Eq('A').equal(1),)},
+            {'expected': 'WHERE A == 1', 'elements': ('A == 1',)},
+            {'expected': 'WHERE A == 1', 'elements': (Ex({'A': 1}),)},
+            {'expected': 'WHERE A == 1', 'elements': (Ex({'A': op.equal(1)}),)},
+            {'expected': 'WHERE A > 1', 'elements': (Ex({'A': op.bigger(1)}),)},
+            {'expected': 'WHERE A >= 1', 'elements': (Ex({'A': op.bigger_or_equal(1)}),)},
+            {'expected': 'WHERE A < 1', 'elements': (Ex({'A': op.smaller(1)}),)},
+            {'expected': 'WHERE A <= 1', 'elements': (Ex({'A': op.smaller_or_equal(1)}),)},
+            {'expected': 'WHERE A <> 1', 'elements': (Ex({'A': op.different(1)}),)},
+
+            {'expected': 'WHERE DAY IN (20, 30, 40)', 'elements': (Ex({'DAY': [20, 30, 40]}),)},
+            {'expected': 'WHERE DAY IN (20, 30, 40)', 'elements': (Ex({'DAY': op.in_operator([20, 30, 40])}),)},
+            {'expected': 'WHERE DAY IN (\'20\', \'30\', \'40\')', 'elements': (Ex({'DAY': ['20', '30', '40']}),)},
+
             {'expected': 'WHERE REFERENCE_DAY BETWEEN \'20170101\' AND \'20170731\'',
-             'elements': ('REFERENCE_DAY BETWEEN \'20170101\' AND \'20170731\'', )},
-            {'expected': 'WHERE REFERENCE_DAY BETWEEN \'20170101\' AND \'20170731\'',
-             'elements': (Eq('REFERENCE_DAY').between('20170101', '20170731'), )}
+             'elements': ('REFERENCE_DAY BETWEEN \'20170101\' AND \'20170731\'',)},
+            {'expected': 'WHERE REFERENCE_DAY BETWEEN \'20170701\' AND \'20170731\'',
+             'elements': (Ex({'REFERENCE_DAY': op.between('20170701', '20170731')}),)},
+
+            {'expected': 'WHERE A == 1 OR B == 1', 'elements': ('A == 1 OR B == 1',)},
+            {'expected': 'WHERE (A == 1 OR B == 1)', 'elements': (ExOr({'A': 1, 'B': 1}, order=['A', 'B']),)},
+            {'expected': 'WHERE (A == 1 AND (B == 2 OR C == 3))',
+             'elements': (Ex(Ex({'A': 1}), ExOr({'B': 2, 'C': 3}, order=['B', 'C'])),)},
+
+            {'expected': 'WHERE A == 1 AND B == 2', 'elements': (Ex({'A': 1}).add(Ex({'B': 2})),)},
+            {'expected': 'WHERE A == 1 AND B == 2', 'elements': (Ex({'A': 1}) + Ex({'B': 2}),)}
         ]
         for scenario in scenarios:
-
             elements = scenario['elements']
             expected = scenario['expected']
 
