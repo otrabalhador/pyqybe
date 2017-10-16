@@ -11,28 +11,33 @@ class Expression(list):
     def parse_expressions(self, *expressions, order):
         equations = []
         for expression in expressions:
-
             if isinstance(expression, list):
                 equations.extend(expression)
-
             else:
-                if not order:
-                    order = expression.keys()
-
-                for column in order:
-                    operator, value = Operators().equal, expression[column]
-                    equations.append(operator(column, value))
-
-                order = None
+                equations.extend(self._parse_expression(expression, order))
 
         self.extend(equations)
 
+    def add(self, *expressions):
+        self.extend(*expressions)
         return self
+
+    @staticmethod
+    def _parse_expression(expression, order=None):
+        equations = []
+        if not order:
+            order = expression.keys()
+
+        for column in order:
+            operator, value = Operators().equal, expression[column]
+            equations.append(operator(column, value))
+
+        return equations
 
     def extend(self, equations):
         self_contain = True if len(equations) > 1 else False
 
-        formatted_equation = self.join_str.join(equations)
+        formatted_equation = ' {} '.format(self.join_str).join(equations)
         if self_contain:
             formatted_equation = '({})'.format(formatted_equation)
 
@@ -40,14 +45,14 @@ class Expression(list):
 
 
 class Ex(Expression):
-    JOIN_STR = ' AND '
+    JOIN_STR = 'AND'
 
     def __init__(self, *expressions, order=None):
         super().__init__(*expressions, order=order, join_str=self.JOIN_STR)
 
 
 class ExOr(Expression):
-    JOIN_STR = ' OR '
+    JOIN_STR = 'OR'
 
     def __init__(self, *expressions, order=None):
         super().__init__(*expressions, order=order, join_str=self.JOIN_STR)

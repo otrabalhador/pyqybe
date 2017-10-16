@@ -18,10 +18,9 @@ class TestStatementWhere(PyQyBeTestCase):
             {'expected': 'WHERE A == 1 OR B == 1', 'elements': ('A == 1 OR B == 1',)},
             {'expected': 'WHERE (A == 1 OR B == 1)', 'elements': (ExOr({'A': 1, 'B': 1}, order=['A', 'B']),)},
             {'expected': 'WHERE (A == 1 AND (B == 2 OR C == 3))',
-             'elements': (Ex(
-                 Ex({'A': 1}),
-                 ExOr({'B': 2, 'C': 3}, order=['B', 'C'])
-             ),)},
+             'elements': (Ex(Ex({'A': 1}), ExOr({'B': 2, 'C': 3}, order=['B', 'C'])),)},
+            {'expected': 'WHERE A == 1 AND B == 2', 'elements': (Ex({'A': 1}).add(Ex({'B': 2})),)},
+            {'expected': 'WHERE A == 1 AND B == 2', 'elements': (Ex({'A': 1}) + Ex({'B': 2}),)}
         ]
         for scenario in scenarios:
             elements = scenario['elements']
