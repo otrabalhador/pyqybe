@@ -1,4 +1,4 @@
-from pyqybe.operators import Operators
+from pyqybe.operators import Operator, OperatorParser
 
 
 class Expression(list):
@@ -29,8 +29,8 @@ class Expression(list):
             order = expression.keys()
 
         for column in order:
-            operator, value = Operators().equal, expression[column]
-            equations.append(operator(column, value))
+            operator, value = Operator.sniff(expression[column])
+            equations.append(OperatorParser(operator).parse(column, value))
 
         return equations
 
