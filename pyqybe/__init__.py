@@ -14,7 +14,7 @@ from .statements import (
     Statement
 )
 
-ex = Ex
+ex = ex_and = Ex
 ex_or = ExOr
 op = Operator
 query = OracleQueryBuilder
