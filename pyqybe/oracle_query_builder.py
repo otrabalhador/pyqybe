@@ -37,8 +37,7 @@ class OracleQueryBuilder:
 
     def select(self, *args):
         """
-        This method will receive arguments and key arguments
-        for columns and aliased for columns for the
+        This method will receive arguments for columns
         OracleQueryBuilder object
         :param args: Columns to select
             example:
@@ -49,7 +48,7 @@ class OracleQueryBuilder:
                         FOO,
                         BAR
 
-        :return: An OracleQueryBuilder object with the component SELECT
+        :return: An OracleQueryBuilder object
         """
         if not self.statements.get(Select):
             self.statements[Select] = Select()
@@ -59,10 +58,30 @@ class OracleQueryBuilder:
         return self
 
     def from_table(self, *args):
+        """
+            This method will call From object to add the
+             args into the list of tables
+        :param args: Tables for the FROM statement of the query
+        :return: An OracleQueryBuilder object
+        """
         if not self.statements.get(From):
             self.statements[From] = From()
 
         self.statements[From].add(*args)
+
+        return self
+
+    def where(self, *args):
+        """
+            This method will call Where object to add
+            args into the list of constraints
+        :param args: Constraints for the Where statement of the query
+        :return: An OracleQueryBuilder object
+        """
+        if not self.statements.get(Where):
+            self.statements[Where] = Where()
+
+        self.statements[Where].add(*args)
 
         return self
 
