@@ -31,4 +31,4 @@ setup(name='pyqybe',
           'Topic :: Scientific/Engineering :: Mathematics',
           'Operating System :: POSIX',
       ],
-      test_suite="pyqybe.tests",)
+      test_suite="tests",)

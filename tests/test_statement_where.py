@@ -1,7 +1,7 @@
 from pyqybe.expressions import Ex, ExOr
 from pyqybe.operators import Operator as op
 from pyqybe.statements import Where
-from pyqybe.tests.pyqybe_test_case import PyQyBeTestCase
+from tests.pyqybe_test_case import PyQyBeTestCase
 
 
 class TestStatementWhere(PyQyBeTestCase):

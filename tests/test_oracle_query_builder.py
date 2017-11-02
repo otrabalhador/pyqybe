@@ -1,6 +1,6 @@
 from pyqybe.expressions import Ex
 from pyqybe.oracle_query_builder import OracleQueryBuilder
-from pyqybe.tests.pyqybe_test_case import PyQyBeTestCase
+from tests.pyqybe_test_case import PyQyBeTestCase
 
 
 class TestOracleQueryBuilder(PyQyBeTestCase):
